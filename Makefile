@@ -31,29 +31,39 @@ WEBRTCVAD_SRC= \
 
 all: webrtcvad.js
 
-webrtcvad.js: webrtcvad.asm.js webrtcvad.wasm.js webrtcvad.wasm.wasm.js
+webrtcvad.js: webrtcvad.asm.js webrtcvad.wasm.js
 	( \
 		cat license.js \
-			head.js \
-			webrtcvad.wasm.wasm.js \
-			webrtcvad.wasm.js ; \
+			head.js ; \
+		printf 'WebRtcVadWasm="data:application/wasm;base64,' ; \
+		base64 -w0 < webrtcvad.wasm | sed 's/$$/";/' ; \
+		cat build/webrtcvad.js ; \
 		echo '} else {' ; \
-		cat webrtcvad.asm.js ; \
+		cat build/webrtcvad.asm.js ; \
 		echo '}' \
 	) > $@
+	rm -rf build
 
 webrtcvad.asm.js: $(WEBRTCVAD_SRC) pre.js post.js
-	$(CC) $(CFLAGS) $(EFLAGS) $(WEBRTCVAD_SRC) -s WASM=0 -o $@
+	mkdir -p build
+	$(CC) $(CFLAGS) $(EFLAGS) $(WEBRTCVAD_SRC) -s WASM=0 -o build/webrtcvad.asm.js
+	( \
+		cat license.js \
+			build/webrtcvad.asm.js \
+	) > $@
 
 webrtcvad.wasm.js: $(WEBRTCVAD_SRC) pre.js post.js
-	$(CC) $(CFLAGS) $(EFLAGS) $(WEBRTCVAD_SRC) -o $@
-
-webrtcvad.wasm.wasm.js: webrtcvad.wasm.js
+	mkdir -p build
+	$(CC) $(CFLAGS) $(EFLAGS) $(WEBRTCVAD_SRC) -o build/webrtcvad.js
+	chmod a-x build/webrtcvad.wasm
+	mv build/webrtcvad.wasm .
 	( \
-		printf 'WebRtcVadWasm = "data:application/wasm;base64,' ; \
-		base64 -w0 < webrtcvad.wasm.wasm | sed 's/$$/";/' \
+		cat license.js ; \
+		printf 'WebRtcVadWasm="data:application/wasm;base64,' ; \
+		base64 -w0 < webrtcvad.wasm | sed 's/$$/";/' ; \
+		cat build/webrtcvad.js \
 	) > $@
 
 clean:
-	rm -f webrtcvad.js webrtcvad.asm.js webrtcvad.wasm.js \
-		webrtcvad.wasm.wasm webrtcvad.wasm.wasm.js
+	rm -rf build
+	rm -f webrtcvad.js webrtcvad.asm.js webrtcvad.wasm.js webrtcvad.wasm

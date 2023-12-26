@@ -1,8 +1,5 @@
-webrtcvad.asm.js
-webrtcvad.wasm.js
-webrtcvad.wasm.wasm.js
-
 .*
+build
 webrtc
 head.js
 pre.js
