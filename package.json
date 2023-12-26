@@ -1,5 +1,5 @@
 {
-  "name": "webrtcvad.js",
+  "name": "@ennuicastr/webrtcvad.js",
   "version": "0.1.0",
   "description": "A direct port of the WebRTC VAD to WebAssembly and JavaScript",
   "main": "webrtcvad.js",
