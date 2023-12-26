@@ -1,4 +1,4 @@
-if (typeof WebRtcVadWasm !== "undefined") {
+if (typeof process === "undefined" && typeof WebRtcVadWasm !== "undefined") {
     Module.locateFile = function (path, scriptDirectory) {
         if (/\.wasm$/.test(path))
             return WebRtcVadWasm;
